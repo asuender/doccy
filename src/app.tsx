@@ -4,7 +4,7 @@ import { SearchBar } from "./components/SearchBar"
 import { ResultList } from "./components/ResultList"
 import { DocViewer } from "./components/DocViewer"
 import { StatusBar } from "./components/StatusBar"
-import type { RustCrate, SearchEntry, DocEntry } from "./types"
+import type { RustCrate, SearchEntry, DocEntry, RustItem } from "./types"
 
 interface AppProps {
   crate: RustCrate,
@@ -13,18 +13,14 @@ interface AppProps {
 
 type FocusPane = "search" | "results" | "doc"
 
-// function filterEntries(query: string): SearchEntry[] {
-//   // if (!query.trim()) return DOC_ENTRIES
-//
-//   const lower = query.toLowerCase()
-//   return DOC_ENTRIES.filter((entry) => {
-//     return (
-//       entry.name.toLowerCase().includes(lower) ||
-//       entry.path.toLowerCase().includes(lower) ||
-//       entry.kind.includes(lower)
-//     )
-//   })
-// }
+function constructViewedEntry(item: RustItem, entry: SearchEntry): DocEntry {
+  return {
+    id: item.id,
+    name: item.name ?? "",
+    docs: item.docs ?? "",
+    kind: entry.kind
+  }
+}
 
 export function App({ crate, searchEntries }: AppProps) {
   const renderer = useRenderer()
@@ -56,12 +52,7 @@ export function App({ crate, searchEntries }: AppProps) {
       const entry = filteredEntries[index]!
       if (entry) {
         const item = crateIndex[entry.id]!;
-        setViewedEntry({
-          id: item.id,
-          name: item.name ?? "",
-          docs: item.docs ?? "",
-          kind: entry.kind
-        })
+        setViewedEntry(constructViewedEntry(item, entry))
         setFocusPane("doc")
       }
     },
@@ -88,9 +79,10 @@ export function App({ crate, searchEntries }: AppProps) {
       if (focusPane === "search" && filteredEntries.length > 0) {
         setFocusPane("results")
       } else if (focusPane === "results") {
-        const entry = filteredEntries[selectedIndex]
+        const entry = filteredEntries[selectedIndex]!
         if (entry) {
-          // setViewedEntry(entry)
+          const item = crateIndex[entry.id]!;
+          setViewedEntry(constructViewedEntry(item, entry))
           setFocusPane("doc")
         }
       }
