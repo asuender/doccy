@@ -3,6 +3,9 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "bun --watch src/index.tsx"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/react": "^19.2.14"
@@ -13,6 +16,7 @@
   "dependencies": {
     "@opentui/core": "^0.1.81",
     "@opentui/react": "^0.1.81",
-    "react": "^19.2.4"
+    "react": "^19.2.4",
+    "trie-search": "^2.2.1"
   }
 }

@@ -1,6 +1,5 @@
 import { SyntaxStyle, RGBA } from "@opentui/core"
-import type { DocEntry } from "../data"
-import { kindLabel } from "../data"
+import { type DocEntry } from "../types"
 
 // Required by <markdown> - bare minimum for readable output
 const syntaxStyle = SyntaxStyle.fromStyles({
@@ -15,16 +14,15 @@ const syntaxStyle = SyntaxStyle.fromStyles({
 })
 
 interface DocViewerProps {
-  entry: DocEntry | null
+  docEntry: DocEntry | null
   focused: boolean
 }
 
-export function DocViewer({ entry, focused }: DocViewerProps) {
-  if (!entry) {
+export function DocViewer({ docEntry, focused }: DocViewerProps) {
+  if (!docEntry) {
     return (
       <box
         flexGrow={1}
-        borderStyle="rounded"
         justifyContent="center"
         alignItems="center"
       >
@@ -33,14 +31,14 @@ export function DocViewer({ entry, focused }: DocViewerProps) {
     )
   }
 
-  const left = entry
-    ? `${kindLabel(entry.kind)} ${entry.path}`
+  const left = docEntry
+    ? `${docEntry.kind} ${docEntry.name}`
     : "doccy"
 
   return (
     <box
       flexGrow={1}
-      title={entry.path}
+      title={docEntry.name}
       titleAlignment="left"
       flexDirection="column"
       gap={1}
@@ -54,7 +52,7 @@ export function DocViewer({ entry, focused }: DocViewerProps) {
         viewportCulling={true}
       >
         <markdown
-          content={entry.doc}
+          content={docEntry.docs ?? "No documentation for this item."}
           syntaxStyle={syntaxStyle}
           conceal={true}
           width="100%"

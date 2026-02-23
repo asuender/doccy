@@ -1,8 +1,7 @@
-import type { DocEntry } from "../data"
-import { kindLabel } from "../data"
+import type { SearchEntry } from "../types"
 
 interface ResultListProps {
-  entries: DocEntry[]
+  entries: SearchEntry[]
   focused: boolean
   selectedIndex: number
   onSelectionChange: (index: number) => void
@@ -17,8 +16,8 @@ export function ResultList({
   onSelect,
 }: ResultListProps) {
   const options = entries.map((entry) => ({
-    name: `${kindLabel(entry.kind).padEnd(6)} ${entry.name}`,
-    description: entry.brief,
+    name: `${entry.kind.padEnd(6)} ${entry.name}`,
+    description: "",
     value: entry,
   }))
 

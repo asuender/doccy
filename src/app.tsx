@@ -1,35 +1,46 @@
 import { useKeyboard, useRenderer } from "@opentui/react"
 import { useState, useCallback, useMemo } from "react"
-import { DOC_ENTRIES, type DocEntry } from "./data"
 import { SearchBar } from "./components/SearchBar"
 import { ResultList } from "./components/ResultList"
 import { DocViewer } from "./components/DocViewer"
 import { StatusBar } from "./components/StatusBar"
+import type { Crate, SearchEntry, DocEntry } from "./types"
+
+interface AppProps {
+  crate: Crate,
+  searchIndex: SearchEntry[]
+};
 
 type FocusPane = "search" | "results" | "doc"
 
-function filterEntries(query: string): DocEntry[] {
-  if (!query.trim()) return DOC_ENTRIES
+// function filterEntries(query: string): SearchEntry[] {
+//   // if (!query.trim()) return DOC_ENTRIES
+//
+//   const lower = query.toLowerCase()
+//   return DOC_ENTRIES.filter((entry) => {
+//     return (
+//       entry.name.toLowerCase().includes(lower) ||
+//       entry.path.toLowerCase().includes(lower) ||
+//       entry.kind.includes(lower)
+//     )
+//   })
+// }
 
-  const lower = query.toLowerCase()
-  return DOC_ENTRIES.filter((entry) => {
-    return (
-      entry.name.toLowerCase().includes(lower) ||
-      entry.path.toLowerCase().includes(lower) ||
-      entry.kind.includes(lower)
-    )
-  })
-}
-
-export function App() {
+export function App({ crate, searchIndex }: AppProps) {
   const renderer = useRenderer()
+
+  const crateIndex = crate.index;
 
   const [query, setQuery] = useState("")
   const [focusPane, setFocusPane] = useState<FocusPane>("search")
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [viewedEntry, setViewedEntry] = useState<DocEntry | null>(null)
 
-  const filteredEntries = useMemo(() => filterEntries(query), [query])
+  const filteredEntries = useMemo(() => {
+    return searchIndex.filter((entry) => {
+      return entry.name.toLowerCase().includes(query.toLowerCase())
+    });
+  }, [query])
 
   const handleInput = useCallback((value: string) => {
     setQuery(value)
@@ -42,9 +53,15 @@ export function App() {
 
   const handleSelect = useCallback(
     (index: number) => {
-      const entry = filteredEntries[index]
+      const entry = filteredEntries[index]!
       if (entry) {
-        setViewedEntry(entry)
+        const item = crateIndex[entry.id]!;
+        setViewedEntry({
+          id: item.id,
+          name: item.name ?? "",
+          docs: item.docs ?? "",
+          kind: entry.kind
+        })
         setFocusPane("doc")
       }
     },
@@ -73,16 +90,13 @@ export function App() {
       } else if (focusPane === "results") {
         const entry = filteredEntries[selectedIndex]
         if (entry) {
-          setViewedEntry(entry)
+          // setViewedEntry(entry)
           setFocusPane("doc")
         }
       }
       return
     }
   })
-
-  const currentEntry = filteredEntries[selectedIndex] ?? null
-  const displayEntry = viewedEntry ?? currentEntry
 
   return (
     <box flexDirection="column" width="100%" height="100%" padding={1}>
@@ -114,7 +128,7 @@ export function App() {
           onSelect={handleSelect}
         />
         <DocViewer
-          entry={displayEntry}
+          docEntry={viewedEntry ?? null}
           focused={focusPane === "doc"}
         />
       </box>
