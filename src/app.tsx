@@ -4,11 +4,11 @@ import { SearchBar } from "./components/SearchBar"
 import { ResultList } from "./components/ResultList"
 import { DocViewer } from "./components/DocViewer"
 import { StatusBar } from "./components/StatusBar"
-import type { Crate, SearchEntry, DocEntry } from "./types"
+import type { RustCrate, SearchEntry, DocEntry } from "./types"
 
 interface AppProps {
-  crate: Crate,
-  searchIndex: SearchEntry[]
+  crate: RustCrate,
+  searchEntries: SearchEntry[]
 };
 
 type FocusPane = "search" | "results" | "doc"
@@ -26,7 +26,7 @@ type FocusPane = "search" | "results" | "doc"
 //   })
 // }
 
-export function App({ crate, searchIndex }: AppProps) {
+export function App({ crate, searchEntries }: AppProps) {
   const renderer = useRenderer()
 
   const crateIndex = crate.index;
@@ -37,7 +37,7 @@ export function App({ crate, searchIndex }: AppProps) {
   const [viewedEntry, setViewedEntry] = useState<DocEntry | null>(null)
 
   const filteredEntries = useMemo(() => {
-    return searchIndex.filter((entry) => {
+    return searchEntries.filter((entry) => {
       return entry.name.toLowerCase().includes(query.toLowerCase())
     });
   }, [query])

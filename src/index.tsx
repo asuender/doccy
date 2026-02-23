@@ -13,7 +13,7 @@ if (!checkFormatVersion(crate)) {
   process.exit(1)
 }
 
-const searchIndex = createSearchIndex(crate.index);
+const searchEntries = createSearchIndex(crate.index);
 const renderer = await createCliRenderer()
 
-createRoot(renderer).render(<App crate={crate} searchIndex={searchIndex} />)
+createRoot(renderer).render(<App crate={crate} searchEntries={searchEntries} />)

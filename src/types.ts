@@ -1,24 +1,24 @@
-export type Crate = {
+export type RustCrate = {
   root: number,
   crate_version?: string,
   includes_private: boolean,
-  index: CrateIndex,
-  paths: CratePaths,
+  index: RustCrateIndex,
+  paths: RustCratePaths,
   external_crates: any,
   target: any,
   format_version: number
 };
 
-export type CrateIndex = Record<string, Item>;
-export type CratePaths = Record<string, ItemSummary>;
+export type RustCrateIndex = Record<string, RustItem>;
+export type RustCratePaths = Record<string, RustItemSummary>;
 
-export type ItemSummary = {
+export type RustItemSummary = {
   crate_id: number,
   path: [string],
   kind: string
 };
 
-export type Item = {
+export type RustItem = {
   id: number,
   name?: string,
   docs?: string,
