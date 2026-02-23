@@ -1,7 +1,7 @@
 import { createCliRenderer } from "@opentui/core"
 import { createRoot } from "@opentui/react"
 import { App } from "./app"
-import { checkFormatVersion, createSearchIndex, loadCrate } from "./utils";
+import { checkFormatVersion, createSearchEntries, loadCrate } from "./utils";
 
 const crate = await loadCrate().catch((error) => {
   console.error(error.message);
@@ -13,7 +13,7 @@ if (!checkFormatVersion(crate)) {
   process.exit(1)
 }
 
-const searchEntries = createSearchIndex(crate.index);
+const searchEntries = createSearchEntries(crate);
 const renderer = await createCliRenderer()
 
 createRoot(renderer).render(<App crate={crate} searchEntries={searchEntries} />)

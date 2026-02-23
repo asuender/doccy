@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import type { RustCrate, RustCrateIndex, SearchEntry } from "./types";
+import type { RustCrate, SearchEntry } from "./types";
 
 export async function loadCrate(): Promise<RustCrate> {
   const { stdout, success } = Bun.spawnSync(["rustc", "+nightly", "--print", "sysroot"]);
@@ -16,18 +16,24 @@ export async function loadCrate(): Promise<RustCrate> {
   })
 }
 
-export function checkFormatVersion(data: any) {
+export function checkFormatVersion(data: RustCrate) {
   return data.format_version == 57;
 }
 
-export function createSearchIndex(index: RustCrateIndex) {
+export function createSearchEntries(crate: RustCrate) {
+  const { index, paths } = crate;
   let searchEntries: SearchEntry[] = [];
 
   for (const [itemId, item] of Object.entries(index)) {
-    if (item.name != undefined) {
-      const kind = Object.keys(item.inner)[0]!;
-      searchEntries.push({ id: itemId, name: item.name, kind: kind })
-    }
+    const name = item.name;
+    const kind = Object.keys(item.inner)[0];
+
+    if (!name || !kind) continue;
+
+    const path = paths[itemId]?.path ?? [];
+    const pathName = path.join("::");
+
+    searchEntries.push({ id: itemId, name, kind, pathName })
   }
 
   return searchEntries;

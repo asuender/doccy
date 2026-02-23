@@ -16,8 +16,8 @@ export function ResultList({
   onSelect,
 }: ResultListProps) {
   const options = entries.map((entry) => ({
-    name: `${entry.kind.padEnd(6)} ${entry.name}`,
-    description: "",
+    name: entry.name,
+    description: entry.pathName ?? "",
     value: entry,
   }))
 
@@ -33,7 +33,7 @@ export function ResultList({
         focused={focused}
         options={options}
         selectedIndex={selectedIndex}
-        showDescription={false}
+        showDescription={true}
         showScrollIndicator={true}
         wrapSelection={true}
         width="100%"

@@ -29,6 +29,7 @@ export type SearchEntry = {
   id: string,
   name: string,
   kind: string
+  pathName?: string
 };
 
 export type DocEntry = {
