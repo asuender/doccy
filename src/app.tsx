@@ -81,6 +81,18 @@ export function App({ crate, searchEntries }: AppProps) {
         }
         break;
 
+      case "right":
+        if (focusPane === "results") {
+          showItemDocumentation(selectedIndex);
+        }
+        break;
+
+      case "left":
+        if (focusPane === "doc") {
+          setFocusPane("results");
+        }
+        break;
+
       case "r":
         if (focusPane !== "results") {
           setFocusPane("results");
