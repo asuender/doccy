@@ -1,11 +1,11 @@
-import type { SearchEntry } from "../types"
+import type { SearchEntry } from "../types";
 
 interface ResultListProps {
-  entries: SearchEntry[]
-  focused: boolean
-  selectedIndex: number
-  onSelectionChange: (index: number) => void
-  onSelect: (index: number) => void
+  entries: SearchEntry[];
+  focused: boolean;
+  selectedIndex: number;
+  onSelectionChange: (index: number) => void;
+  onSelect: (index: number) => void;
 }
 
 export function ResultList({
@@ -19,16 +19,13 @@ export function ResultList({
     name: entry.name,
     description: entry.pathName ?? "",
     value: entry,
-  }))
+  }));
 
   return (
-    <box
-      width={34}
-      flexDirection="column"
-      titleAlignment="left"
-      gap={1}
-    >
-      <text><strong>Results:</strong></text>
+    <box width={34} flexDirection="column" titleAlignment="left" gap={1}>
+      <text>
+        <strong>Results:</strong>
+      </text>
       <select
         focused={focused}
         options={options}
@@ -42,5 +39,5 @@ export function ResultList({
         onSelect={(index) => onSelect(index)}
       />
     </box>
-  )
+  );
 }

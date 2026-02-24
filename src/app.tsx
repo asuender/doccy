@@ -1,62 +1,65 @@
-import { useKeyboard, useRenderer } from "@opentui/react"
-import { useState, useCallback, useMemo } from "react"
-import { SearchBar } from "./components/SearchBar"
-import { ResultList } from "./components/ResultList"
-import { DocViewer } from "./components/DocViewer"
-import { StatusBar } from "./components/StatusBar"
-import type { RustCrate, SearchEntry, DocEntry, RustItem, FocusPane } from "./types"
+import { useKeyboard, useRenderer } from "@opentui/react";
+import { useState, useCallback, useMemo } from "react";
+import { SearchBar } from "./components/SearchBar";
+import { ResultList } from "./components/ResultList";
+import { DocViewer } from "./components/DocViewer";
+import { StatusBar } from "./components/StatusBar";
+import type {
+  RustCrate,
+  SearchEntry,
+  DocEntry,
+  RustItem,
+  FocusPane,
+} from "./types";
 
 interface AppProps {
-  crate: RustCrate,
-  searchEntries: SearchEntry[]
-};
+  crate: RustCrate;
+  searchEntries: SearchEntry[];
+}
 
 function constructViewedEntry(item: RustItem, entry: SearchEntry): DocEntry {
   return {
     id: item.id,
     name: item.name ?? "",
     docs: item.docs ?? "",
-    kind: entry.kind
-  }
+    kind: entry.kind,
+  };
 }
 
 export function App({ crate, searchEntries }: AppProps) {
-  const renderer = useRenderer()
+  const renderer = useRenderer();
   const crateIndex = crate.index;
 
-  const [query, setQuery] = useState("")
-  const [focusPane, setFocusPane] = useState<FocusPane>("search")
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const [viewedEntry, setViewedEntry] = useState<DocEntry | null>(null)
+  const [query, setQuery] = useState("");
+  const [focusPane, setFocusPane] = useState<FocusPane>("search");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [viewedEntry, setViewedEntry] = useState<DocEntry | null>(null);
 
   const showItemDocumentation = (index: number) => {
-    const entry = filteredEntries[index]
+    const entry = filteredEntries[index];
     if (entry) {
       const item = crateIndex[entry.id]!;
-      setViewedEntry(constructViewedEntry(item, entry))
-      setFocusPane("doc")
+      setViewedEntry(constructViewedEntry(item, entry));
+      setFocusPane("doc");
     }
-  }
+  };
 
   const filteredEntries = useMemo(() => {
     return searchEntries.filter((entry) => {
-      return entry.name.toLowerCase().includes(query.toLowerCase())
+      return entry.name.toLowerCase().includes(query.toLowerCase());
     });
   }, [query]);
 
   const handleInput = useCallback((value: string) => {
-    setQuery(value)
-    setSelectedIndex(0)
-  }, [])
+    setQuery(value);
+    setSelectedIndex(0);
+  }, []);
 
   const handleSelectionChange = useCallback((index: number) => {
-    setSelectedIndex(index)
-  }, [])
+    setSelectedIndex(index);
+  }, []);
 
-  const handleSelect = useCallback(
-    showItemDocumentation,
-    [filteredEntries],
-  )
+  const handleSelect = useCallback(showItemDocumentation, [filteredEntries]);
 
   useKeyboard((key) => {
     switch (key.name) {
@@ -107,12 +110,12 @@ export function App({ crate, searchEntries }: AppProps) {
 
       case "return":
         if (focusPane === "search" && filteredEntries.length > 0) {
-          setFocusPane("results")
+          setFocusPane("results");
         } else if (focusPane === "results") {
-          showItemDocumentation(selectedIndex)
+          showItemDocumentation(selectedIndex);
         }
     }
-  })
+  });
 
   return (
     <box flexDirection="column" width="100%" height="100%" padding={1}>
@@ -153,5 +156,5 @@ export function App({ crate, searchEntries }: AppProps) {
         <StatusBar focusPane={focusPane} />
       </box>
     </box>
-  )
+  );
 }

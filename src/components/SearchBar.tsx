@@ -1,7 +1,7 @@
 interface SearchBarProps {
-  focused: boolean
-  query: string
-  onInput: (value: string) => void
+  focused: boolean;
+  query: string;
+  onInput: (value: string) => void;
 }
 
 export function SearchBar({ focused, query, onInput }: SearchBarProps) {
@@ -24,5 +24,5 @@ export function SearchBar({ focused, query, onInput }: SearchBarProps) {
         flexGrow={1}
       />
     </box>
-  )
+  );
 }

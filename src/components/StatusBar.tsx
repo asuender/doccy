@@ -1,19 +1,19 @@
-import type { FocusPane } from "../types"
+import type { FocusPane } from "../types";
 
 interface StatusBarProps {
-  focusPane: FocusPane
+  focusPane: FocusPane;
 }
 
 function keyhints(pane: FocusPane): string {
   switch (pane) {
     case "search":
-      return "Enter:results  ESC:back"
+      return "Enter:results  ESC:back";
     case "results":
-      return "/:search  Enter:view  ESC:quit"
+      return "/:search  Enter:view  ESC:quit";
     case "doc":
-      return "ESC: normal mode"
+      return "ESC: normal mode";
     default:
-      return "/:search r:results d:documentation ESC:quit"
+      return "/:search r:results d:documentation ESC:quit";
   }
 }
 
@@ -29,5 +29,5 @@ export function StatusBar({ focusPane }: StatusBarProps) {
     >
       <text>{keyhints(focusPane)}</text>
     </box>
-  )
+  );
 }

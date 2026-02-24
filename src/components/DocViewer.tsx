@@ -1,5 +1,5 @@
-import { SyntaxStyle, RGBA } from "@opentui/core"
-import { type DocEntry } from "../types"
+import { SyntaxStyle, RGBA } from "@opentui/core";
+import { type DocEntry } from "../types";
 
 // Required by <markdown> - bare minimum for readable output
 const syntaxStyle = SyntaxStyle.fromStyles({
@@ -11,38 +11,29 @@ const syntaxStyle = SyntaxStyle.fromStyles({
   "markup.heading": { fg: RGBA.fromHex("#61afef"), bold: true },
   "markup.raw": { fg: RGBA.fromHex("#98c379") },
   default: { fg: RGBA.fromHex("#abb2bf") },
-})
+});
 
 interface DocViewerProps {
-  docEntry: DocEntry | null
-  focused: boolean
+  docEntry: DocEntry | null;
+  focused: boolean;
 }
 
 export function DocViewer({ docEntry, focused }: DocViewerProps) {
   if (!docEntry) {
     return (
-      <box
-        flexGrow={1}
-        justifyContent="center"
-        alignItems="center"
-      >
+      <box flexGrow={1} justifyContent="center" alignItems="center">
         <text>Press / to search</text>
       </box>
-    )
+    );
   }
 
-  const left = docEntry
-    ? `${docEntry.kind} ${docEntry.name}`
-    : "doccy"
+  const left = docEntry ? `${docEntry.kind} ${docEntry.name}` : "doccy";
 
   return (
-    <box
-      flexGrow={1}
-      titleAlignment="left"
-      flexDirection="column"
-      gap={1}
-    >
-      <text><strong>{left}</strong></text>
+    <box flexGrow={1} titleAlignment="left" flexDirection="column" gap={1}>
+      <text>
+        <strong>{left}</strong>
+      </text>
       <scrollbox
         focused={focused}
         width="100%"
@@ -58,5 +49,5 @@ export function DocViewer({ docEntry, focused }: DocViewerProps) {
         />
       </scrollbox>
     </box>
-  )
+  );
 }
