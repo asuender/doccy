@@ -11,7 +11,7 @@ function keyhints(pane: FocusPane): string {
     case "results":
       return "/:search  Enter:view  ESC:quit";
     case "doc":
-      return "ESC: normal mode";
+      return "left:results ESC:normal mode";
     default:
       return "/:search r:results d:documentation ESC:quit";
   }
