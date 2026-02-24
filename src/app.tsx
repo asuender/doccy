@@ -11,8 +11,10 @@ import type {
   RustItem,
   FocusPane,
 } from "./types";
+import type { TreeSitterClient } from "@opentui/core";
 
 interface AppProps {
+  treeSitterClient: TreeSitterClient;
   crate: RustCrate;
   searchEntries: SearchEntry[];
 }
@@ -26,7 +28,7 @@ function constructViewedEntry(item: RustItem, entry: SearchEntry): DocEntry {
   };
 }
 
-export function App({ crate, searchEntries }: AppProps) {
+export function App({ crate, searchEntries, treeSitterClient }: AppProps) {
   const renderer = useRenderer();
   const crateIndex = crate.index;
 
@@ -149,6 +151,7 @@ export function App({ crate, searchEntries }: AppProps) {
         <DocViewer
           docEntry={viewedEntry ?? null}
           focused={focusPane === "doc"}
+          treeSitterClient={treeSitterClient}
         />
       </box>
 

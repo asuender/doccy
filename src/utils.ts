@@ -1,5 +1,6 @@
 import { join } from "node:path";
 import type { RustCrate, SearchEntry } from "./types";
+import { RUSTDOC_TAGS } from "./constants";
 
 export async function loadCrate(): Promise<RustCrate> {
   const { stdout, success } = Bun.spawnSync([
@@ -55,4 +56,11 @@ export function createSearchEntries(crate: RustCrate) {
   }
 
   return searchEntries;
+}
+
+export function normalizeCodeBlocks(markdown: string): string {
+  return markdown.replace(/^```(\w*)(?=\n\S)/gm, (match, tag) => {
+    if (!tag || RUSTDOC_TAGS.has(tag)) return "```rust";
+    return match;
+  });
 }

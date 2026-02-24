@@ -1,5 +1,6 @@
-import { SyntaxStyle, RGBA } from "@opentui/core";
+import { SyntaxStyle, RGBA, TreeSitterClient } from "@opentui/core";
 import { type DocEntry } from "../types";
+import { normalizeCodeBlocks } from "../utils";
 
 // Required by <markdown> - bare minimum for readable output
 const syntaxStyle = SyntaxStyle.fromStyles({
@@ -16,9 +17,14 @@ const syntaxStyle = SyntaxStyle.fromStyles({
 interface DocViewerProps {
   docEntry: DocEntry | null;
   focused: boolean;
+  treeSitterClient: TreeSitterClient;
 }
 
-export function DocViewer({ docEntry, focused }: DocViewerProps) {
+export function DocViewer({
+  docEntry,
+  focused,
+  treeSitterClient,
+}: DocViewerProps) {
   if (!docEntry) {
     return (
       <box flexGrow={1} justifyContent="center" alignItems="center">
@@ -42,10 +48,15 @@ export function DocViewer({ docEntry, focused }: DocViewerProps) {
         viewportCulling={true}
       >
         <markdown
-          content={docEntry.docs ?? "No documentation for this item."}
+          content={
+            docEntry.docs
+              ? normalizeCodeBlocks(docEntry.docs)
+              : "No documentation for this item."
+          }
           syntaxStyle={syntaxStyle}
           conceal={true}
           width="100%"
+          treeSitterClient={treeSitterClient}
         />
       </scrollbox>
     </box>
