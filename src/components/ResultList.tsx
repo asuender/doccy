@@ -16,28 +16,30 @@ export function ResultList({
   onSelect,
 }: ResultListProps) {
   const options = entries.map((entry) => ({
-    name: entry.name,
-    description: entry.pathName ?? "",
+    name: entry.pathName ?? entry.name,
+    description: entry.kind,
     value: entry,
   }));
 
   return (
-    <box width={34} flexDirection="column" titleAlignment="left" gap={1}>
+    <box width={44} flexDirection="column" titleAlignment="left" gap={1}>
       <text>
         <strong>Results:</strong>
       </text>
-      <select
-        focused={focused}
-        options={options}
-        selectedIndex={selectedIndex}
-        showDescription={true}
-        showScrollIndicator={true}
-        wrapSelection={true}
-        width="100%"
-        height="100%"
-        onChange={(index) => onSelectionChange(index)}
-        onSelect={(index) => onSelect(index)}
-      />
+      {entries.length > 0 && (
+        <select
+          focused={focused}
+          options={options}
+          selectedIndex={selectedIndex}
+          showDescription={true}
+          showScrollIndicator={true}
+          wrapSelection={true}
+          width="100%"
+          height="100%"
+          onChange={(index) => onSelectionChange(index)}
+          onSelect={(index) => onSelect(index)}
+        />
+      )}
     </box>
   );
 }

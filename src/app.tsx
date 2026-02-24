@@ -93,19 +93,23 @@ export function App({ crate, searchEntries, treeSitterClient }: AppProps) {
         break;
 
       case "left":
-        if (focusPane === "doc") {
+        if (focusPane === "doc" && filteredEntries.length > 0) {
           setFocusPane("results");
         }
         break;
 
       case "r":
-        if (focusPane !== "results" && focusPane != "search") {
+        if (
+          focusPane !== "results" &&
+          focusPane !== "search" &&
+          filteredEntries.length > 0
+        ) {
           setFocusPane("results");
         }
         break;
 
       case "d":
-        if (focusPane !== "doc" && focusPane != "search") {
+        if (focusPane !== "doc" && focusPane != "search" && viewedEntry) {
           setFocusPane("doc");
         }
         break;
@@ -156,7 +160,11 @@ export function App({ crate, searchEntries, treeSitterClient }: AppProps) {
       </box>
 
       <box paddingTop={1}>
-        <StatusBar focusPane={focusPane} />
+        <StatusBar
+          focusPane={focusPane}
+          hasResults={filteredEntries.length > 0}
+          hasDocEntry={viewedEntry !== null}
+        />
       </box>
     </box>
   );
