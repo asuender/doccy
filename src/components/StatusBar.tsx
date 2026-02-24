@@ -11,9 +11,9 @@ function keyhints(pane: FocusPane): string {
     case "results":
       return "/:search  Enter:view  ESC:quit";
     case "doc":
-      return "left:results ESC:back";
+      return "left:results  ESC:back";
     default:
-      return "/:search r:results d:documentation ESC:quit";
+      return "/:search  r:results  d:documentation  ESC:quit";
   }
 }
 

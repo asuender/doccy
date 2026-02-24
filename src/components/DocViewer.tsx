@@ -10,6 +10,9 @@ const syntaxStyle = SyntaxStyle.fromStyles({
   function: { fg: RGBA.fromHex("#61afef") },
   type: { fg: RGBA.fromHex("#e5c07b") },
   "markup.heading": { fg: RGBA.fromHex("#61afef"), bold: true },
+  "markup.heading.1": { bold: true, underline: true },
+  "markup.heading.2": { bold: true },
+  "markup.heading.3": { italic: true },
   "markup.raw": { fg: RGBA.fromHex("#98c379") },
   default: { fg: RGBA.fromHex("#abb2bf") },
 });
