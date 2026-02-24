@@ -39,3 +39,5 @@ export type DocEntry = {
   path?: [string]
   kind?: string
 };
+
+export type FocusPane = "search" | "results" | "doc" | null;

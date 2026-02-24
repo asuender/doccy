@@ -14,6 +14,6 @@ if (!checkFormatVersion(crate)) {
 }
 
 const searchEntries = createSearchEntries(crate);
-const renderer = await createCliRenderer()
+const renderer = await createCliRenderer({ autoFocus: false })
 
 createRoot(renderer).render(<App crate={crate} searchEntries={searchEntries} />)

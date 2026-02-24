@@ -1,4 +1,4 @@
-type FocusPane = "search" | "results" | "doc"
+import type { FocusPane } from "../types"
 
 interface StatusBarProps {
   focusPane: FocusPane
@@ -11,7 +11,9 @@ function keyhints(pane: FocusPane): string {
     case "results":
       return "/:search  Enter:view  ESC:quit"
     case "doc":
-      return "/:search  ESC:quit"
+      return "ESC: normal mode"
+    default:
+      return "/:search r:results d:documentation ESC:quit"
   }
 }
 

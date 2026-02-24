@@ -4,14 +4,12 @@ import { SearchBar } from "./components/SearchBar"
 import { ResultList } from "./components/ResultList"
 import { DocViewer } from "./components/DocViewer"
 import { StatusBar } from "./components/StatusBar"
-import type { RustCrate, SearchEntry, DocEntry, RustItem } from "./types"
+import type { RustCrate, SearchEntry, DocEntry, RustItem, FocusPane } from "./types"
 
 interface AppProps {
   crate: RustCrate,
   searchEntries: SearchEntry[]
 };
-
-type FocusPane = "search" | "results" | "doc"
 
 function constructViewedEntry(item: RustItem, entry: SearchEntry): DocEntry {
   return {
@@ -24,7 +22,6 @@ function constructViewedEntry(item: RustItem, entry: SearchEntry): DocEntry {
 
 export function App({ crate, searchEntries }: AppProps) {
   const renderer = useRenderer()
-
   const crateIndex = crate.index;
 
   const [query, setQuery] = useState("")
@@ -32,11 +29,20 @@ export function App({ crate, searchEntries }: AppProps) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [viewedEntry, setViewedEntry] = useState<DocEntry | null>(null)
 
+  const showItemDocumentation = (index: number) => {
+    const entry = filteredEntries[index]
+    if (entry) {
+      const item = crateIndex[entry.id]!;
+      setViewedEntry(constructViewedEntry(item, entry))
+      setFocusPane("doc")
+    }
+  }
+
   const filteredEntries = useMemo(() => {
     return searchEntries.filter((entry) => {
       return entry.name.toLowerCase().includes(query.toLowerCase())
     });
-  }, [query])
+  }, [query]);
 
   const handleInput = useCallback((value: string) => {
     setQuery(value)
@@ -48,45 +54,51 @@ export function App({ crate, searchEntries }: AppProps) {
   }, [])
 
   const handleSelect = useCallback(
-    (index: number) => {
-      const entry = filteredEntries[index]!
-      if (entry) {
-        const item = crateIndex[entry.id]!;
-        setViewedEntry(constructViewedEntry(item, entry))
-        setFocusPane("doc")
-      }
-    },
+    showItemDocumentation,
     [filteredEntries],
   )
 
   useKeyboard((key) => {
-    if (key.name === "escape") {
-      if (focusPane === "search") {
-        setFocusPane("results")
-      } else {
-        renderer.destroy()
-      }
-      return
-    }
-
-    if (key.name === "/" && focusPane !== "search") {
-      key.preventDefault()
-      setFocusPane("search")
-      return
-    }
-
-    if (key.name === "return") {
-      if (focusPane === "search" && filteredEntries.length > 0) {
-        setFocusPane("results")
-      } else if (focusPane === "results") {
-        const entry = filteredEntries[selectedIndex]!
-        if (entry) {
-          const item = crateIndex[entry.id]!;
-          setViewedEntry(constructViewedEntry(item, entry))
-          setFocusPane("doc")
+    switch (key.name) {
+      case "escape":
+        if (!focusPane) {
+          renderer.destroy();
+        } else {
+          setFocusPane(null);
         }
-      }
-      return
+        break;
+
+      case "/":
+        if (focusPane !== "search") {
+          key.preventDefault();
+          setFocusPane("search");
+        }
+        break;
+
+      case "down":
+        if (focusPane === "search" && filteredEntries.length > 0) {
+          setFocusPane("results");
+        }
+        break;
+
+      case "r":
+        if (focusPane !== "results") {
+          setFocusPane("results");
+        }
+        break;
+
+      case "d":
+        if (focusPane !== "doc") {
+          setFocusPane("doc");
+        }
+        break;
+
+      case "return":
+        if (focusPane === "search" && filteredEntries.length > 0) {
+          setFocusPane("results")
+        } else if (focusPane === "results") {
+          showItemDocumentation(selectedIndex)
+        }
     }
   })
 

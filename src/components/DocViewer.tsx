@@ -38,7 +38,6 @@ export function DocViewer({ docEntry, focused }: DocViewerProps) {
   return (
     <box
       flexGrow={1}
-      title={docEntry.name}
       titleAlignment="left"
       flexDirection="column"
       gap={1}
