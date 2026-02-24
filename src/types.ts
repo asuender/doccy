@@ -20,6 +20,7 @@ export type RustItemSummary = {
 
 export type RustItem = {
   id: number;
+  crate_id: number;
   name?: string;
   docs?: string;
   inner: string;
@@ -34,6 +35,7 @@ export type SearchEntry = {
 
 export type DocEntry = {
   id: number;
+  crate_id: number;
   name?: string;
   docs?: string;
   path?: [string];

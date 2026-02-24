@@ -22,6 +22,7 @@ interface AppProps {
 function constructViewedEntry(item: RustItem, entry: SearchEntry): DocEntry {
   return {
     id: item.id,
+    crate_id: item.crate_id,
     name: item.name ?? "",
     docs: item.docs ?? "",
     kind: entry.kind,

@@ -16,7 +16,7 @@ export function ResultList({
   onSelect,
 }: ResultListProps) {
   const options = entries.map((entry) => ({
-    name: entry.pathName ?? entry.name,
+    name: entry.pathName || entry.name,
     description: entry.kind,
     value: entry,
   }));
