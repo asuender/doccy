@@ -99,13 +99,13 @@ export function App({ crate, searchEntries, treeSitterClient }: AppProps) {
         break;
 
       case "r":
-        if (focusPane !== "results") {
+        if (focusPane !== "results" && focusPane != "search") {
           setFocusPane("results");
         }
         break;
 
       case "d":
-        if (focusPane !== "doc") {
+        if (focusPane !== "doc" && focusPane != "search") {
           setFocusPane("doc");
         }
         break;
