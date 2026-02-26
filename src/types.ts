@@ -29,6 +29,7 @@ export type RustItem = {
 export type SearchEntry = {
   id: string;
   name: string;
+  nameLower: string;
   kind: string;
   pathName?: string;
 };

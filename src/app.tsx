@@ -11,6 +11,7 @@ import type {
   RustItem,
   FocusPane,
 } from "./types";
+import { debounce } from "./utils";
 import type { TreeSitterClient } from "@opentui/core";
 
 interface AppProps {
@@ -49,7 +50,7 @@ export function App({ crate, searchEntries, treeSitterClient }: AppProps) {
 
   const filteredEntries = useMemo(() => {
     return searchEntries.filter((entry) => {
-      return entry.name.toLowerCase().includes(query.toLowerCase());
+      return entry.nameLower.includes(query.toLowerCase());
     });
   }, [query]);
 
@@ -57,6 +58,11 @@ export function App({ crate, searchEntries, treeSitterClient }: AppProps) {
     setQuery(value);
     setSelectedIndex(0);
   }, []);
+
+  const debouncedHandleInput = useMemo(
+    () => debounce(handleInput, 75),
+    [handleInput],
+  );
 
   const handleSelectionChange = useCallback((index: number) => {
     setSelectedIndex(index);
@@ -142,7 +148,7 @@ export function App({ crate, searchEntries, treeSitterClient }: AppProps) {
       <SearchBar
         focused={focusPane === "search"}
         query={query}
-        onInput={handleInput}
+        onInput={debouncedHandleInput}
       />
 
       <box flexDirection="row" flexGrow={1} width="100%" gap={5}>

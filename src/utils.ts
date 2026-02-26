@@ -2,6 +2,19 @@ import { join } from "node:path";
 import type { RustCrate, SearchEntry } from "./types";
 import { RUSTDOC_TAGS } from "./constants";
 
+/* originally taken from https://www.joshwcomeau.com/snippets/javascript/debounce/ */
+export function debounce<T extends (...args: any[]) => void>(
+  callback: T,
+  wait: number,
+) {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+
+  return (...args: Parameters<T>) => {
+    timeout && clearTimeout(timeout);
+    timeout = setTimeout(() => callback(...args), wait);
+  };
+}
+
 export async function loadCrate(): Promise<RustCrate> {
   const { stdout, success } = Bun.spawnSync([
     "rustc",
@@ -52,7 +65,13 @@ export function createSearchEntries(crate: RustCrate) {
     const path = paths[itemId]?.path ?? [];
     const pathName = path.join("::");
 
-    searchEntries.push({ id: itemId, name, kind, pathName });
+    searchEntries.push({
+      id: itemId,
+      name,
+      nameLower: name.toLowerCase(),
+      kind,
+      pathName,
+    });
   }
 
   return searchEntries;
