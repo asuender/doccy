@@ -80,15 +80,19 @@ export function createSearchEntries(crate: RustCrate) {
 export function normalizeCodeBlocks(markdown: string): string {
   let insideCodeBlock = false;
 
-  return markdown.replace(/^```(\w*)$/gm, (match, tag) => {
-    if (insideCodeBlock) {
-      insideCodeBlock = false;
+  return markdown
+    .replace(/^```(\w*)$/gm, (match, tag) => {
+      if (insideCodeBlock) {
+        insideCodeBlock = false;
+        return match;
+      }
+
+      insideCodeBlock = true;
+      if (!tag || RUSTDOC_TAGS.has(tag)) return "```rust";
+
       return match;
-    }
-
-    insideCodeBlock = true;
-    if (!tag || RUSTDOC_TAGS.has(tag)) return "```rust";
-
-    return match;
-  });
+    })
+    .replace(/^(#{1,6}\s+.*)$/gm, (line) => {
+      return line.replace(/`([^`]*)`/g, "$1");
+    });
 }
