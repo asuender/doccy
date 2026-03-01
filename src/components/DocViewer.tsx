@@ -37,12 +37,20 @@ export function DocViewer({
   }
 
   const left = docEntry ? `${docEntry.kind} ${docEntry.name}` : "doccy";
+  const deprecation = docEntry.deprecation;
 
   return (
-    <box flexGrow={1} titleAlignment="left" flexDirection="column" gap={1}>
-      <text>
-        <strong>{left}</strong>
-      </text>
+    <box flexGrow={1} flexDirection="column" gap={1}>
+      <box flexDirection="column" height={deprecation ? 2 : 1}>
+        <text>
+          <strong>{left}</strong>
+        </text>
+        {deprecation && (
+          <text fg="#e5c07b">
+            Deprecated since {deprecation.since}: {deprecation.note}
+          </text>
+        )}
+      </box>
       <scrollbox
         focused={focused}
         width="100%"

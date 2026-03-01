@@ -24,6 +24,12 @@ export type RustItem = {
   name?: string;
   docs?: string;
   inner: string;
+  deprecation?: RustItemDeprecation;
+};
+
+export type RustItemDeprecation = {
+  since?: string;
+  note?: string;
 };
 
 export type SearchEntry = {
@@ -42,6 +48,7 @@ export type DocEntry = {
   docs?: string;
   path?: [string];
   kind?: string;
+  deprecation?: RustItemDeprecation;
 };
 
 export type FocusPane = "search" | "results" | "doc" | null;
