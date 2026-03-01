@@ -49,9 +49,22 @@ export function App({ crate, searchEntries, treeSitterClient }: AppProps) {
   };
 
   const filteredEntries = useMemo(() => {
-    return searchEntries.filter((entry) => {
-      return entry.nameLower.includes(query.toLowerCase());
-    });
+    return searchEntries
+      .filter((entry) => {
+        return entry.nameLower.includes(query.toLowerCase());
+      })
+      .map((entry) => {
+        if (entry.name === query) {
+          entry.score = 2;
+        } else if (entry.name.includes(query)) {
+          entry.score = 1;
+        } else {
+          entry.score = 0;
+        }
+
+        return entry;
+      })
+      .sort((entryA, entryB) => entryB.score! - entryA.score!);
   }, [query]);
 
   const handleInput = useCallback((value: string) => {

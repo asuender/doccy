@@ -32,6 +32,7 @@ export type SearchEntry = {
   nameLower: string;
   kind: string;
   pathName?: string;
+  score?: number;
 };
 
 export type DocEntry = {
