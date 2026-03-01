@@ -23,13 +23,21 @@ export type RustItem = {
   crate_id: number;
   name?: string;
   docs?: string;
-  inner: string;
+  inner: RustItemInner;
   deprecation?: RustItemDeprecation;
 };
+
+export type RustItemInner = RustModule | {};
 
 export type RustItemDeprecation = {
   since?: string;
   note?: string;
+};
+
+export type RustModule = {
+  is_crate: boolean;
+  items: number[];
+  is_stripped: boolean;
 };
 
 export type SearchEntry = {
@@ -48,6 +56,7 @@ export type DocEntry = {
   docs?: string;
   path?: [string];
   kind?: string;
+  inner: RustItemInner;
   deprecation?: RustItemDeprecation;
 };
 

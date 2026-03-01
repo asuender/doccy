@@ -23,6 +23,14 @@ interface DocViewerProps {
   treeSitterClient: TreeSitterClient;
 }
 
+function ItemDetails({ docEntry }: { docEntry: DocEntry }) {
+  switch (docEntry.kind) {
+    case "module":
+    default:
+      return null;
+  }
+}
+
 export function DocViewer({
   docEntry,
   focused,
@@ -51,6 +59,9 @@ export function DocViewer({
           </text>
         )}
       </box>
+
+      <ItemDetails docEntry={docEntry} />
+
       <scrollbox
         focused={focused}
         width="100%"

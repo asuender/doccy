@@ -27,6 +27,7 @@ function constructViewedEntry(item: RustItem, entry: SearchEntry): DocEntry {
     name: item.name ?? "",
     docs: item.docs ?? "",
     kind: entry.kind,
+    inner: item.inner,
     deprecation: item.deprecation,
   };
 }
