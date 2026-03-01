@@ -1,5 +1,6 @@
-import { SyntaxStyle, RGBA } from "@opentui/core"
-import { type DocEntry } from "../types"
+import { SyntaxStyle, RGBA, TreeSitterClient } from "@opentui/core";
+import { type DocEntry } from "../types";
+import { normalizeCodeBlocks } from "../utils";
 
 // Required by <markdown> - bare minimum for readable output
 const syntaxStyle = SyntaxStyle.fromStyles({
@@ -9,41 +10,39 @@ const syntaxStyle = SyntaxStyle.fromStyles({
   function: { fg: RGBA.fromHex("#61afef") },
   type: { fg: RGBA.fromHex("#e5c07b") },
   "markup.heading": { fg: RGBA.fromHex("#61afef"), bold: true },
+  "markup.heading.1": { bold: true, underline: true },
+  "markup.heading.2": { bold: true },
+  "markup.heading.3": { italic: true },
   "markup.raw": { fg: RGBA.fromHex("#98c379") },
   default: { fg: RGBA.fromHex("#abb2bf") },
-})
+});
 
 interface DocViewerProps {
-  docEntry: DocEntry | null
-  focused: boolean
+  docEntry: DocEntry | null;
+  focused: boolean;
+  treeSitterClient: TreeSitterClient;
 }
 
-export function DocViewer({ docEntry, focused }: DocViewerProps) {
+export function DocViewer({
+  docEntry,
+  focused,
+  treeSitterClient,
+}: DocViewerProps) {
   if (!docEntry) {
     return (
-      <box
-        flexGrow={1}
-        justifyContent="center"
-        alignItems="center"
-      >
+      <box flexGrow={1} justifyContent="center" alignItems="center">
         <text>Press / to search</text>
       </box>
-    )
+    );
   }
 
-  const left = docEntry
-    ? `${docEntry.kind} ${docEntry.name}`
-    : "doccy"
+  const left = docEntry ? `${docEntry.kind} ${docEntry.name}` : "doccy";
 
   return (
-    <box
-      flexGrow={1}
-      title={docEntry.name}
-      titleAlignment="left"
-      flexDirection="column"
-      gap={1}
-    >
-      <text><strong>{left}</strong></text>
+    <box flexGrow={1} titleAlignment="left" flexDirection="column" gap={1}>
+      <text>
+        <strong>{left}</strong>
+      </text>
       <scrollbox
         focused={focused}
         width="100%"
@@ -52,12 +51,17 @@ export function DocViewer({ docEntry, focused }: DocViewerProps) {
         viewportCulling={true}
       >
         <markdown
-          content={docEntry.docs ?? "No documentation for this item."}
+          content={
+            docEntry.docs
+              ? normalizeCodeBlocks(docEntry.docs)
+              : "No documentation for this item."
+          }
           syntaxStyle={syntaxStyle}
           conceal={true}
           width="100%"
+          treeSitterClient={treeSitterClient}
         />
       </scrollbox>
     </box>
-  )
+  );
 }
