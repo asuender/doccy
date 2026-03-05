@@ -63,7 +63,8 @@ export function createSearchEntries(crate: RustCrate) {
     if (!name || !kind) continue;
 
     const path = paths[itemId]?.path ?? [];
-    const pathName = path.join("::");
+    const pathName = path.slice(0, -1).join("::");
+    const fullPathName = path.join("::");
 
     searchEntries.push({
       id: itemId,
@@ -71,6 +72,7 @@ export function createSearchEntries(crate: RustCrate) {
       nameLower: name.toLowerCase(),
       kind,
       pathName,
+      fullPathName,
     });
   }
 

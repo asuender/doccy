@@ -4,6 +4,7 @@ import {
   TreeSitterClient,
   CodeRenderable,
   BoxRenderable,
+  TextRenderable,
 } from "@opentui/core";
 import { type DocEntry } from "../types";
 import { normalizeCodeBlocks } from "../utils";
@@ -105,6 +106,7 @@ export function DocViewer({
                 return wrapper;
               }
             }
+
             return undefined;
           }}
         />

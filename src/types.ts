@@ -46,6 +46,7 @@ export type SearchEntry = {
   nameLower: string;
   kind: string;
   pathName?: string;
+  fullPathName?: string;
   score?: number;
 };
 
