@@ -4,7 +4,7 @@ import {
   TreeSitterClient,
   CodeRenderable,
   BoxRenderable,
-  TextRenderable,
+  LineNumberRenderable,
 } from "@opentui/core";
 import { type DocEntry } from "../types";
 import { normalizeCodeBlocks } from "../utils";
@@ -98,10 +98,19 @@ export function DocViewer({
 
                 const wrapper = new BoxRenderable(renderer, {
                   width: "100%",
-                  paddingLeft: 2,
                   marginBottom: 1,
                 });
-                wrapper.add(codeRenderable);
+
+                if (!token.text.trim().includes("\n")) {
+                  wrapper.add(codeRenderable);
+                } else {
+                  wrapper.add(
+                    new LineNumberRenderable(renderer, {
+                      target: codeRenderable,
+                      paddingRight: 3,
+                    }),
+                  );
+                }
 
                 return wrapper;
               }
