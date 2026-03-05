@@ -1,6 +1,13 @@
-import { SyntaxStyle, RGBA, TreeSitterClient } from "@opentui/core";
+import {
+  SyntaxStyle,
+  RGBA,
+  TreeSitterClient,
+  CodeRenderable,
+  BoxRenderable,
+} from "@opentui/core";
 import { type DocEntry } from "../types";
 import { normalizeCodeBlocks } from "../utils";
+import { useRenderer } from "@opentui/react";
 
 // Required by <markdown> - bare minimum for readable output
 const syntaxStyle = SyntaxStyle.fromStyles({
@@ -44,6 +51,7 @@ export function DocViewer({
     );
   }
 
+  const renderer = useRenderer();
   const left = docEntry ? `${docEntry.kind} ${docEntry.name}` : "doccy";
   const deprecation = docEntry.deprecation;
 
@@ -68,6 +76,7 @@ export function DocViewer({
         height="100%"
         scrollY={true}
         viewportCulling={true}
+        paddingRight={2}
       >
         <markdown
           content={
@@ -79,6 +88,25 @@ export function DocViewer({
           conceal={true}
           width="100%"
           treeSitterClient={treeSitterClient}
+          renderNode={(token, context) => {
+            if (token.type === "code") {
+              const codeRenderable = context.defaultRender() as CodeRenderable;
+
+              if (codeRenderable) {
+                codeRenderable.marginBottom = 0;
+
+                const wrapper = new BoxRenderable(renderer, {
+                  width: "100%",
+                  paddingLeft: 2,
+                  marginBottom: 1,
+                });
+                wrapper.add(codeRenderable);
+
+                return wrapper;
+              }
+            }
+            return undefined;
+          }}
         />
       </scrollbox>
     </box>
