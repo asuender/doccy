@@ -1,22 +1,26 @@
-import type { FocusPane } from "../types";
+import { FocusPane, type State } from "../types";
 
 interface StatusBarProps {
-  focusPane: FocusPane;
+  state: State;
   hasResults: boolean;
   hasDocEntry: boolean;
 }
 
+function showFocusedPane(state: State) {
+  return `(focused: ${state.focusPane ?? "none"})`;
+}
+
 function showKeyhints({
-  focusPane,
+  state,
   hasResults,
   hasDocEntry,
 }: StatusBarProps): string {
-  switch (focusPane) {
-    case "search":
+  switch (state.focusPane) {
+    case FocusPane.Search:
       return `${hasResults ? "Enter:results  down:results" : ""}  ESC:back`;
-    case "results":
+    case FocusPane.Results:
       return `/:search  ${hasDocEntry ? "d:documentation  " : ""}Enter:view  ESC:back`;
-    case "doc":
+    case FocusPane.Doc:
       return `/:search  ${hasResults ? "left:results  " : ""}ESC:back`;
     default:
       return `/:search  ${hasResults ? "r:results  " : ""}${hasDocEntry ? "d:documentation  " : ""}ESC:quit`;
@@ -29,10 +33,11 @@ export function StatusBar(props: StatusBarProps) {
       height={1}
       width="100%"
       flexDirection="row"
-      justifyContent="flex-end"
+      justifyContent="space-between"
       paddingLeft={1}
       paddingRight={1}
     >
+      <text>{showFocusedPane(props.state)}</text>
       <text>{showKeyhints(props)}</text>
     </box>
   );

@@ -61,4 +61,12 @@ export type DocEntry = {
   deprecation?: RustItemDeprecation;
 };
 
-export type FocusPane = "search" | "results" | "doc" | null;
+export enum FocusPane {
+  Search = "search",
+  Results = "results",
+  Doc = "documentation",
+}
+
+export type State = {
+  focusPane: FocusPane | null;
+};
