@@ -30,6 +30,10 @@ export async function loadCrate(): Promise<RustCrate> {
   }
 
   const sysroot = stdout.toString().trim();
+  if (!sysroot) {
+    throw new Error("Could not determine rustc nightly sysroot.");
+  }
+
   const coreDocsPath = join(
     sysroot,
     "share",
@@ -48,7 +52,7 @@ export async function loadCrate(): Promise<RustCrate> {
     });
 }
 
-export function checkFormatVersion(data: RustCrate) {
+export function isSupportedFormatVersion(data: RustCrate) {
   return data.format_version == 57;
 }
 
@@ -83,14 +87,15 @@ export function normalizeCodeBlocks(markdown: string): string {
   let insideCodeBlock = false;
 
   return markdown
-    .replace(/^```(\w*)$/gm, (match, tag) => {
+    .replace(/^```(\S*)$/gm, (match, tag) => {
       if (insideCodeBlock) {
         insideCodeBlock = false;
         return match;
       }
 
       insideCodeBlock = true;
-      if (!tag || RUSTDOC_TAGS.has(tag)) return "```rust";
+      const baseTag = tag.split(",")[0] ?? "";
+      if (!baseTag || RUSTDOC_TAGS.has(baseTag)) return "```rust";
 
       return match;
     })
@@ -98,5 +103,5 @@ export function normalizeCodeBlocks(markdown: string): string {
       return line.replace(/`([^`]*)`/g, "$1");
     })
     .replace(/^#\s.+$\n?/gm, "")
-    .replace(/^\[.+\]:.+$\n?/gm, "");
+    .replace(/^\[.+\]:.*(?:\n[ \t]+.+)*/gm, "");
 }
