@@ -108,3 +108,5 @@ export enum FocusPane {
 export type State = {
   focusPane: FocusPane | null;
 };
+
+export type FocusPane = "search" | "results" | "doc" | null;
