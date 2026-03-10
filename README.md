@@ -2,7 +2,7 @@
 
 A rich TUI to browse Rust's std and core libraries.
 
-![demo](./assets/screenshot.png)
+![demo](./assets/screenshot.webp)
 
 ## Installation
 

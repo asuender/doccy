@@ -1,4 +1,5 @@
 import type { SearchEntry } from "../types";
+import { KIND_ABBREVIATIONS } from "../constants";
 
 interface ResultListProps {
   entries: SearchEntry[];
@@ -16,8 +17,8 @@ export function ResultList({
   onSelect,
 }: ResultListProps) {
   const options = entries.map((entry) => ({
-    name: entry.pathName || entry.name,
-    description: entry.kind,
+    name: `[${KIND_ABBREVIATIONS[entry.kind] ?? entry.kind}] ${entry.name}`,
+    description: entry.pathName ?? "",
     value: entry,
   }));
 

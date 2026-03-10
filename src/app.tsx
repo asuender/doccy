@@ -4,11 +4,12 @@ import { SearchBar } from "./components/SearchBar";
 import { ResultList } from "./components/ResultList";
 import { DocViewer } from "./components/DocViewer";
 import { StatusBar } from "./components/StatusBar";
-import type {
-  RustCrate,
-  SearchEntry,
-  DocEntry,
-  RustItem,
+import {
+  type RustCrate,
+  type SearchEntry,
+  type DocEntry,
+  type RustItem,
+  type State,
   FocusPane,
 } from "./types";
 import { debounce } from "./utils";
@@ -25,8 +26,11 @@ function constructViewedEntry(item: RustItem, entry: SearchEntry): DocEntry {
     id: item.id,
     crate_id: item.crate_id,
     name: item.name ?? "",
+    pathName: entry.pathName,
     docs: item.docs ?? "",
     kind: entry.kind,
+    inner: item.inner,
+    deprecation: item.deprecation,
   };
 }
 
@@ -35,16 +39,20 @@ export function App({ crate, searchEntries, treeSitterClient }: AppProps) {
   const crateIndex = crate.index;
 
   const [query, setQuery] = useState("");
-  const [focusPane, setFocusPane] = useState<FocusPane>("search");
+  const [state, setState] = useState<State>({ focusPane: FocusPane.Search });
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [viewedEntry, setViewedEntry] = useState<DocEntry | null>(null);
+
+  const setFocusPane = (focusPane: FocusPane | null) => {
+    setState((prev) => ({ ...prev, focusPane }));
+  };
 
   const showItemDocumentation = (index: number) => {
     const entry = filteredEntries[index];
     if (entry) {
       const item = crateIndex[entry.id]!;
       setViewedEntry(constructViewedEntry(item, entry));
-      setFocusPane("doc");
+      setFocusPane(FocusPane.Doc);
     }
   };
 
@@ -86,7 +94,7 @@ export function App({ crate, searchEntries, treeSitterClient }: AppProps) {
   useKeyboard((key) => {
     switch (key.name) {
       case "escape":
-        if (!focusPane) {
+        if (!state.focusPane) {
           renderer.destroy();
         } else {
           setFocusPane(null);
@@ -94,50 +102,60 @@ export function App({ crate, searchEntries, treeSitterClient }: AppProps) {
         break;
 
       case "/":
-        if (focusPane !== "search") {
+        if (state.focusPane !== FocusPane.Search) {
           key.preventDefault();
-          setFocusPane("search");
+          setFocusPane(FocusPane.Search);
         }
         break;
 
       case "down":
-        if (focusPane === "search" && filteredEntries.length > 0) {
-          setFocusPane("results");
+        if (
+          state.focusPane === FocusPane.Search &&
+          filteredEntries.length > 0
+        ) {
+          setFocusPane(FocusPane.Results);
         }
         break;
 
       case "right":
-        if (focusPane === "results") {
+        if (state.focusPane === FocusPane.Results) {
           showItemDocumentation(selectedIndex);
         }
         break;
 
       case "left":
-        if (focusPane === "doc" && filteredEntries.length > 0) {
-          setFocusPane("results");
+        if (state.focusPane === FocusPane.Doc && filteredEntries.length > 0) {
+          setFocusPane(FocusPane.Results);
         }
         break;
 
       case "r":
         if (
-          focusPane !== "results" &&
-          focusPane !== "search" &&
+          state.focusPane !== FocusPane.Results &&
+          state.focusPane !== FocusPane.Search &&
           filteredEntries.length > 0
         ) {
-          setFocusPane("results");
+          setFocusPane(FocusPane.Results);
         }
         break;
 
       case "d":
-        if (focusPane !== "doc" && focusPane != "search" && viewedEntry) {
-          setFocusPane("doc");
+        if (
+          state.focusPane !== FocusPane.Doc &&
+          state.focusPane !== FocusPane.Search &&
+          viewedEntry
+        ) {
+          setFocusPane(FocusPane.Doc);
         }
         break;
 
       case "return":
-        if (focusPane === "search" && filteredEntries.length > 0) {
-          setFocusPane("results");
-        } else if (focusPane === "results") {
+        if (
+          state.focusPane === FocusPane.Search &&
+          filteredEntries.length > 0
+        ) {
+          setFocusPane(FocusPane.Results);
+        } else if (state.focusPane === FocusPane.Results) {
           showItemDocumentation(selectedIndex);
         }
     }
@@ -159,7 +177,7 @@ export function App({ crate, searchEntries, treeSitterClient }: AppProps) {
       </box>
 
       <SearchBar
-        focused={focusPane === "search"}
+        focused={state.focusPane === FocusPane.Search}
         query={query}
         onInput={debouncedHandleInput}
       />
@@ -167,21 +185,22 @@ export function App({ crate, searchEntries, treeSitterClient }: AppProps) {
       <box flexDirection="row" flexGrow={1} width="100%" gap={5}>
         <ResultList
           entries={filteredEntries}
-          focused={focusPane === "results"}
+          focused={state.focusPane === FocusPane.Results}
           selectedIndex={selectedIndex}
           onSelectionChange={handleSelectionChange}
           onSelect={handleSelect}
         />
         <DocViewer
           docEntry={viewedEntry ?? null}
-          focused={focusPane === "doc"}
+          focused={state.focusPane === FocusPane.Doc}
+          crateIndex={crateIndex}
           treeSitterClient={treeSitterClient}
         />
       </box>
 
       <box paddingTop={1}>
         <StatusBar
-          focusPane={focusPane}
+          state={state}
           hasResults={filteredEntries.length > 0}
           hasDocEntry={viewedEntry !== null}
         />

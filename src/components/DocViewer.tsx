@@ -1,6 +1,15 @@
-import { SyntaxStyle, RGBA, TreeSitterClient } from "@opentui/core";
-import { type DocEntry } from "../types";
+import {
+  SyntaxStyle,
+  RGBA,
+  TreeSitterClient,
+  CodeRenderable,
+  BoxRenderable,
+  LineNumberRenderable,
+} from "@opentui/core";
+import { type DocEntry, type RustCrateIndex } from "../types";
 import { normalizeCodeBlocks } from "../utils";
+import { useRenderer } from "@opentui/react";
+import { ItemDetails } from "./ItemDetails";
 
 // Required by <markdown> - bare minimum for readable output
 const syntaxStyle = SyntaxStyle.fromStyles({
@@ -20,12 +29,14 @@ const syntaxStyle = SyntaxStyle.fromStyles({
 interface DocViewerProps {
   docEntry: DocEntry | null;
   focused: boolean;
+  crateIndex: RustCrateIndex;
   treeSitterClient: TreeSitterClient;
 }
 
 export function DocViewer({
   docEntry,
   focused,
+  crateIndex,
   treeSitterClient,
 }: DocViewerProps) {
   if (!docEntry) {
@@ -36,19 +47,19 @@ export function DocViewer({
     );
   }
 
-  const left = docEntry ? `${docEntry.kind} ${docEntry.name}` : "doccy";
+  const renderer = useRenderer();
 
   return (
-    <box flexGrow={1} titleAlignment="left" flexDirection="column" gap={1}>
-      <text>
-        <strong>{left}</strong>
-      </text>
+    <box flexGrow={1} flexDirection="column" gap={1}>
+      <ItemDetails docEntry={docEntry} crateIndex={crateIndex} />
+
       <scrollbox
         focused={focused}
         width="100%"
         height="100%"
         scrollY={true}
         viewportCulling={true}
+        paddingRight={2}
       >
         <markdown
           content={
@@ -60,6 +71,35 @@ export function DocViewer({
           conceal={true}
           width="100%"
           treeSitterClient={treeSitterClient}
+          renderNode={(token, context) => {
+            if (token.type === "code") {
+              const codeRenderable = context.defaultRender() as CodeRenderable;
+
+              if (codeRenderable) {
+                codeRenderable.marginBottom = 0;
+
+                const wrapper = new BoxRenderable(renderer, {
+                  width: "100%",
+                  marginBottom: 1,
+                });
+
+                if (!token.text.trim().includes("\n")) {
+                  wrapper.add(codeRenderable);
+                } else {
+                  wrapper.add(
+                    new LineNumberRenderable(renderer, {
+                      target: codeRenderable,
+                      paddingRight: 3,
+                    }),
+                  );
+                }
+
+                return wrapper;
+              }
+            }
+
+            return undefined;
+          }}
         />
       </scrollbox>
     </box>
