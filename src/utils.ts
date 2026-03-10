@@ -102,6 +102,6 @@ export function normalizeCodeBlocks(markdown: string): string {
     .replace(/^(#{1,6}\s+.*)$/gm, (line) => {
       return line.replace(/`([^`]*)`/g, "$1");
     })
-    .replace(/^#\s.+$\n?/gm, "")
+    .replace(/^#\s+#!.*$\n?/gm, "")
     .replace(/^\[.+\]:.*(?:\n[ \t]+.+)*/gm, "");
 }
