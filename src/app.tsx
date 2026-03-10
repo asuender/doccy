@@ -26,6 +26,7 @@ function constructViewedEntry(item: RustItem, entry: SearchEntry): DocEntry {
     id: item.id,
     crate_id: item.crate_id,
     name: item.name ?? "",
+    pathName: entry.pathName,
     docs: item.docs ?? "",
     kind: entry.kind,
     inner: item.inner,
@@ -192,6 +193,7 @@ export function App({ crate, searchEntries, treeSitterClient }: AppProps) {
         <DocViewer
           docEntry={viewedEntry ?? null}
           focused={state.focusPane === FocusPane.Doc}
+          crateIndex={crateIndex}
           treeSitterClient={treeSitterClient}
         />
       </box>

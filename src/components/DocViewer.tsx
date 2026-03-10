@@ -6,9 +6,10 @@ import {
   BoxRenderable,
   LineNumberRenderable,
 } from "@opentui/core";
-import { type DocEntry } from "../types";
+import { type DocEntry, type RustCrateIndex } from "../types";
 import { normalizeCodeBlocks } from "../utils";
 import { useRenderer } from "@opentui/react";
+import { ItemDetails } from "./ItemDetails";
 
 // Required by <markdown> - bare minimum for readable output
 const syntaxStyle = SyntaxStyle.fromStyles({
@@ -28,20 +29,14 @@ const syntaxStyle = SyntaxStyle.fromStyles({
 interface DocViewerProps {
   docEntry: DocEntry | null;
   focused: boolean;
+  crateIndex: RustCrateIndex;
   treeSitterClient: TreeSitterClient;
-}
-
-function ItemDetails({ docEntry }: { docEntry: DocEntry }) {
-  switch (docEntry.kind) {
-    case "module":
-    default:
-      return null;
-  }
 }
 
 export function DocViewer({
   docEntry,
   focused,
+  crateIndex,
   treeSitterClient,
 }: DocViewerProps) {
   if (!docEntry) {
@@ -53,23 +48,10 @@ export function DocViewer({
   }
 
   const renderer = useRenderer();
-  const left = docEntry ? `${docEntry.kind} ${docEntry.name}` : "doccy";
-  const deprecation = docEntry.deprecation;
 
   return (
     <box flexGrow={1} flexDirection="column" gap={1}>
-      <box flexDirection="column" height={deprecation ? 2 : 1}>
-        <text>
-          <strong>{left}</strong>
-        </text>
-        {deprecation && (
-          <text fg="#e5c07b">
-            Deprecated since {deprecation.since}: {deprecation.note}
-          </text>
-        )}
-      </box>
-
-      <ItemDetails docEntry={docEntry} />
+      <ItemDetails docEntry={docEntry} crateIndex={crateIndex} />
 
       <scrollbox
         focused={focused}

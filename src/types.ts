@@ -27,7 +27,12 @@ export type RustItem = {
   deprecation?: RustItemDeprecation;
 };
 
-export type RustItemInner = RustModule | {};
+export type RustItemInner = {
+  module?: RustModule;
+  enum?: RustEnum;
+  variant?: RustVariant;
+  [key: string]: unknown;
+};
 
 export type RustItemDeprecation = {
   since?: string;
@@ -38,6 +43,38 @@ export type RustModule = {
   is_crate: boolean;
   items: number[];
   is_stripped: boolean;
+};
+
+export type RustEnum = {
+  generics: RustGenerics;
+  has_stripped_variants: boolean;
+  variants: number[];
+  impls: number[];
+};
+
+export type RustVariant = {
+  kind: RustVariantKind;
+  discriminant: RustDiscriminant | null;
+};
+
+export type RustVariantKind =
+  | "plain"
+  | { tuple: (number | null)[] }
+  | { struct: { fields: number[]; has_stripped_fields: boolean } };
+
+export type RustDiscriminant = {
+  expr: string;
+  value: string;
+};
+
+export type RustGenerics = {
+  params: RustGenericParamDef[];
+  where_predicates: unknown[];
+};
+
+export type RustGenericParamDef = {
+  name: string;
+  kind: unknown;
 };
 
 export type SearchEntry = {
@@ -56,6 +93,7 @@ export type DocEntry = {
   name?: string;
   docs?: string;
   path?: [string];
+  pathName?: string;
   kind?: string;
   inner: RustItemInner;
   deprecation?: RustItemDeprecation;
